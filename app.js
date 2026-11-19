@@ -20,8 +20,14 @@ const providerClass = (provider) => {
   if (p.includes("google")) return "google";
   if (p.includes("cursor")) return "cursor";
   if (p.includes("github")) return "github";
+  if (p.includes("minimax")) return "minimax";
+  if (p.includes("z.ai") || p.includes("zhipu")) return "zai";
   return "";
 };
+
+const planLabel = (p) => `${p.product} ${p.planName}${p.model ? ` · ${p.model}` : ""}`;
+
+const isMeasured = (p) => p.measured === true;
 
 const sourceMap = (sources) =>
   Object.fromEntries((sources || []).map((s) => [s.id, s]));
@@ -35,7 +41,7 @@ async function loadData() {
 function filterAndSort(plans, { provider, sort, codingOnly, measuredOnly }) {
   let rows = [...plans];
   if (codingOnly) rows = rows.filter((p) => p.codingRelevant);
-  if (measuredOnly) rows = rows.filter((p) => p.sourceId === "semianalysis");
+  if (measuredOnly) rows = rows.filter(isMeasured);
   if (provider !== "all") rows = rows.filter((p) => p.provider === provider);
 
   const val = (p) => p.apiEqUSD ?? -1;
@@ -58,27 +64,31 @@ function filterAndSort(plans, { provider, sort, codingOnly, measuredOnly }) {
 }
 
 function renderHero(plans) {
-  const measured = plans.filter((p) => p.sourceId === "semianalysis" && p.apiEqUSD != null);
+  const measured = plans.filter((p) => isMeasured(p) && p.apiEqUSD != null);
   const top = measured.reduce((best, p) => (p.apiEqUSD > (best?.apiEqUSD ?? -1) ? p : best), null);
   const bestMult = measured.reduce((best, p) => (p.multiplier > (best?.multiplier ?? -1) ? p : best), null);
-  const sumLoss = measured.reduce((acc, p) => acc + Math.max(0, p.apiEqUSD - p.stickerUSD), 0);
+  const midAt = (provider, sticker) =>
+    measured.find((p) => p.provider === provider && p.stickerUSD === sticker && p.modelTier === "mid");
+  const claudeMid = midAt("Anthropic", 200);
+  const openaiMid = midAt("OpenAI", 200);
+  const gap = claudeMid && openaiMid ? claudeMid.apiEqUSD / openaiMid.apiEqUSD : null;
 
   const root = document.getElementById("hero-stats");
   root.innerHTML = `
     <article class="stat-card">
       <p class="stat-label">Highest API-eq ceiling</p>
       <p class="stat-value">${money(top?.apiEqUSD)}</p>
-      <p class="stat-sub">${top ? `${top.product} ${top.planName} · pay ${money(top.stickerUSD)}` : "—"}</p>
+      <p class="stat-sub">${top ? `${planLabel(top)} · pay ${money(top.stickerUSD)}` : "—"}</p>
     </article>
     <article class="stat-card">
       <p class="stat-label">Best multiplier (measured)</p>
       <p class="stat-value">${bestMult ? `${bestMult.multiplier}×` : "—"}</p>
-      <p class="stat-sub">${bestMult ? `${bestMult.product} ${bestMult.planName}` : "—"}</p>
+      <p class="stat-sub">${bestMult ? planLabel(bestMult) : "—"}</p>
     </article>
     <article class="stat-card">
-      <p class="stat-label">Σ opportunity gap</p>
-      <p class="stat-value">${money(sumLoss)}</p>
-      <p class="stat-sub">Sum of (API-eq − sticker) across SemiAnalysis tiers</p>
+      <p class="stat-label">Claude vs ChatGPT at $200</p>
+      <p class="stat-value">${gap ? `${gap.toFixed(1)}×` : "—"}</p>
+      <p class="stat-sub">${gap ? `${claudeMid.model} ${money(claudeMid.apiEqUSD)} vs ${openaiMid.model} ${money(openaiMid.apiEqUSD)} (mid-tier models)` : "—"}</p>
     </article>
   `;
 }
@@ -120,15 +130,16 @@ function renderTable(rows, sources) {
       const conf = p.confidence
         ? `<span class="badge ${p.confidence}">${p.confidence}</span>`
         : `<span class="na">—</span>`;
+      const asOf = p.asOf ? `<span class="plan-provider source-asof">as of ${p.asOf}</span>` : "";
       const sourceCell = src
-        ? `<a class="source-link" href="${src.url}" target="_blank" rel="noopener">${src.name}</a>`
+        ? `<a class="source-link" href="${src.url}" target="_blank" rel="noopener">${src.name}</a>${asOf}`
         : `<span class="na">n/a</span>`;
 
       return `
         <tr>
           <td>
             <div class="plan-cell">
-              <span class="plan-name">${p.product} ${p.planName}</span>
+              <span class="plan-name">${planLabel(p)}</span>
               <span class="plan-provider">${p.provider}${p.includes ? ` · ${p.includes}` : ""}</span>
             </div>
           </td>
@@ -151,8 +162,8 @@ function renderCards(rows, sources) {
       const src = p.sourceId ? sources[p.sourceId] : null;
       return `
         <article class="plan-card">
-          <h3>${p.product} ${p.planName}</h3>
-          <div class="meta">${p.provider} · ${p.confidence || "unknown"} confidence</div>
+          <h3>${planLabel(p)}</h3>
+          <div class="meta">${p.provider} · ${p.confidence || "unknown"} confidence${p.asOf ? ` · as of ${p.asOf}` : ""}</div>
           <div class="metrics">
             <div class="metric"><span>You pay</span><strong class="sticker">${money(p.stickerUSD)}</strong></div>
             <div class="metric"><span>API-eq</span><strong class="api-eq">${p.apiEqUSD != null ? money(p.apiEqUSD) : "—"}</strong></div>
@@ -178,7 +189,7 @@ function renderChart(rows) {
       const cls = providerClass(p.provider);
       return `
         <div class="bar-row">
-          <div class="bar-label">${p.product} ${p.planName}</div>
+          <div class="bar-label">${planLabel(p)}</div>
           <div class="bar-track" title="Sticker ${money(p.stickerUSD)} vs API-eq ${money(p.apiEqUSD)}">
             <div class="bar-fill ${cls}" data-width="${pct}"></div>
             <div class="bar-sticker" style="left:${stickerPct}%"></div>

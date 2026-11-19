@@ -19,6 +19,8 @@
   --cursor: #a78bfa;
   --github: #8b9bb4;
   --google: #7eb6ff;
+  --minimax: #f28fad;
+  --zai: #c9b46a;
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
   --radius: 14px;
   --font-display: "Fraunces", Georgia, serif;
@@ -405,6 +407,11 @@ input[type="checkbox"]:focus-visible {
   color: var(--ink-faint);
 }
 
+.source-asof {
+  display: block;
+  margin-top: 0.2rem;
+}
+
 .cards {
   display: none;
   grid-template-columns: 1fr;
@@ -519,6 +526,8 @@ input[type="checkbox"]:focus-visible {
 .bar-fill.google { background: linear-gradient(90deg, rgba(126, 182, 255, 0.3), var(--google)); }
 .bar-fill.cursor { background: linear-gradient(90deg, rgba(167, 139, 250, 0.3), var(--cursor)); }
 .bar-fill.github { background: linear-gradient(90deg, rgba(139, 155, 180, 0.3), var(--github)); }
+.bar-fill.minimax { background: linear-gradient(90deg, rgba(242, 143, 173, 0.3), var(--minimax)); }
+.bar-fill.zai { background: linear-gradient(90deg, rgba(201, 180, 106, 0.3), var(--zai)); }
 
 .bar-sticker {
   position: absolute;

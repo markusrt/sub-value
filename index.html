@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sub Value — AI coding subscriptions vs API-equivalent dollars</title>
-  <meta name="description" content="What each AI coding subscription is worth at public API rates. SemiAnalysis ceilings for Claude & ChatGPT/Codex, plus Grok Build estimates." />
+  <meta name="description" content="What each AI coding subscription is worth at public API rates. SemiAnalysis (Oct 2026) per-model ceilings for Claude, ChatGPT/Codex, MiniMax and GLM, plus Grok, Gemini, Cursor and Copilot estimates." />
   <meta property="og:title" content="Sub Value — subscription vs API-equivalent" />
-  <meta property="og:description" content="SemiAnalysis found ChatGPT Pro can deliver up to $14k/mo of API-equivalent tokens for $200. Compare every major coding plan." />
+  <meta property="og:description" content="SemiAnalysis (Oct 2026): a $200 Claude plan is worth up to ~$12.5k/mo of API-equivalent tokens, ~5x ChatGPT Pro on mid-tier models. Compare every major coding plan." />
   <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,7 +26,7 @@
     </div>
     <p class="lede">
       What each AI coding subscription is <em>worth</em> if the same usage were billed at public API rates.
-      SemiAnalysis ceilings for Claude &amp; ChatGPT/Codex; directional estimates for SuperGrok / Grok Build.
+      SemiAnalysis (Oct 2026) per-model ceilings for Claude, ChatGPT/Codex, MiniMax &amp; GLM; directional estimates for Grok, Gemini, Cursor and Copilot.
     </p>
     <div class="header-meta">
       <span id="updated-label">Data as of —</span>
@@ -65,7 +65,7 @@
     <div class="control-group check">
       <label>
         <input type="checkbox" id="measured-only" />
-        SemiAnalysis measured only
+        Measured by SemiAnalysis only
       </label>
     </div>
   </section>
@@ -102,9 +102,10 @@
   <section class="callout">
     <h2>Read this first</h2>
     <ul>
-      <li><strong>Ceilings, not typical bills.</strong> SemiAnalysis exhausted weekly limits with continuous coding. Most people use a fraction of the pool.</li>
+      <li><strong>Ceilings, not typical bills.</strong> Values price a plan's <em>full</em> monthly limit. Most people use a fraction of the pool.</li>
+      <li><strong>Value depends on the model.</strong> One plan is worth very different amounts on Sonnet, Opus or Fable (or Sol vs Astra). Claude plans let Fable use only half the limit.</li>
       <li><strong>API-equivalent ≠ lab cost.</strong> List API prices are not the same as a lab’s marginal cost of serving a subscription token.</li>
-      <li><strong>Harness matters.</strong> Claude Code vs Codex vs Cursor change tokens per task. SemiAnalysis later noted Codex may be more token-efficient than Claude Code.</li>
+      <li><strong>Harness matters.</strong> Claude Code vs Codex vs Cursor change tokens per task, so equal API-equivalent value does not mean equal work done.</li>
       <li><strong>Grok is opaque.</strong> SuperGrok shows a shared weekly <em>%</em> pool with no official dollar size — numbers are reverse-engineered and low confidence.</li>
     </ul>
   </section>
@@ -112,28 +113,40 @@
   <section id="methodology" class="prose">
     <h2>Methodology</h2>
     <p id="methodology-text"></p>
-    <h3>SemiAnalysis experiment (June 2026)</h3>
+    <h3>SemiAnalysis subscription study (October 2026)</h3>
     <p>
-      SemiAnalysis purchased each Anthropic and OpenAI subscription tier, ran long-horizon coding tasks until
-      weekly limits were exhausted, then priced the tokens at public API rates. Widely reported ceilings:
+      SemiAnalysis measured how far each plan's usage meter moves per million tokens of each type
+      (input, cached input, cache writes, output) for every model, then priced the full monthly limit at
+      first-party API list rates. Headline values on the $200 tier (agentic workload):
     </p>
     <ul class="tight">
-      <li>Claude Pro $20 → <strong>$400</strong></li>
-      <li>Claude Max 5× $100 → <strong>$2,000</strong></li>
-      <li>Claude Max 20× $200 → <strong>$8,000</strong></li>
-      <li>ChatGPT Plus $20 → <strong>$700</strong></li>
-      <li>ChatGPT Pro 5× $100 → <strong>$3,500</strong></li>
-      <li>ChatGPT Pro 20× $200 → <strong>$14,000</strong></li>
+      <li>Claude Ultra (was Max 20×) · Sonnet 5.5 → <strong>$12,529</strong> (62.6×)</li>
+      <li>Claude Ultra · Opus 5.5 → <strong>$11,726</strong> (58.6×)</li>
+      <li>Claude Ultra · Fable 5.1 → <strong>$2,485</strong> (12.4×, half the plan)</li>
+      <li>ChatGPT Pro 200 · GPT-6 Astra → <strong>$2,897</strong> (14.5×)</li>
+      <li>ChatGPT Pro 200 · GPT-6.1 Sol → <strong>$2,084</strong> (10.4×)</li>
     </ul>
+    <p>
+      On the models each lab pushes as the daily driver (Opus 5.5 vs GPT-6.1 Sol), Claude plans offer roughly
+      5× the API-equivalent value. OpenAI halved the $200 plan's tokens per model and added a $500 tier;
+      Anthropic raised Opus limits (~20% on Max, ~50% on Pro) alongside the Opus 5.5 price cut, which still lowered
+      the dollar value slightly. On Oct 30, 2026 Anthropic renamed Max 5× to <em>Max</em> and Max 20× to <em>Ultra</em>
+      (same prices and weekly limits; verified Ultra accounts no longer have a five-hour limit).
+    </p>
+    <h3>What changed since the June 2026 study</h3>
+    <p>
+      The June drain experiment reported one number per plan (Claude $400 / $2k / $8k; ChatGPT $700 / $3.5k / $14k).
+      Those figures are superseded: OpenAI's limits were cut, both labs changed API prices, and the October method
+      prices each model separately.
+    </p>
     <h3>Other providers on this site</h3>
     <p>
+      <strong>MiniMax / GLM</strong> rows come from SemiAnalysis via a secondary summary (the section is paywalled);
+      Kimi plans were measured at ~2.5–6.7× but no dollar figures are public.
       <strong>Cursor / Copilot</strong> are credit / pass-through products (~1–2× sticker), not lab-style flat-rate subsidies.
       <strong>Gemini</strong> rows use community aggregators (medium/low confidence).
       <strong>SuperGrok</strong> has no official dollar pool — show the range, not just the midpoint.
-    </p>
-    <p>
-      Prior market belief was roughly “$200 plan ≈ $2,000 of tokens.” SemiAnalysis found several times that
-      at full utilization — which is why top tiers look like massive compute subsidies.
+      These four providers have not been re-checked since July 2026.
     </p>
     <h3>Grok / SuperGrok</h3>
     <p>
@@ -151,7 +164,7 @@
 
   <footer class="site-footer">
     <p>
-      Not affiliated with SemiAnalysis, Anthropic, OpenAI, or xAI.
+      Not affiliated with SemiAnalysis, Anthropic, OpenAI, xAI, or any provider listed.
       Figures can change when labs retune rate limits or API prices.
     </p>
     <p class="mono">sub-value · open data in <a href="data/plans.json">data/plans.json</a></p>
