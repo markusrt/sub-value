@@ -21,6 +21,7 @@
   --google: #7eb6ff;
   --minimax: #f28fad;
   --zai: #c9b46a;
+  --meta: #5b8def;
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
   --radius: 14px;
   --font-display: "Fraunces", Georgia, serif;
@@ -527,6 +528,7 @@ input[type="checkbox"]:focus-visible {
 .bar-fill.cursor { background: linear-gradient(90deg, rgba(167, 139, 250, 0.3), var(--cursor)); }
 .bar-fill.github { background: linear-gradient(90deg, rgba(139, 155, 180, 0.3), var(--github)); }
 .bar-fill.minimax { background: linear-gradient(90deg, rgba(242, 143, 173, 0.3), var(--minimax)); }
+.bar-fill.meta { background: linear-gradient(90deg, rgba(91, 141, 239, 0.3), var(--meta)); }
 .bar-fill.zai { background: linear-gradient(90deg, rgba(201, 180, 106, 0.3), var(--zai)); }
 
 .bar-sticker {

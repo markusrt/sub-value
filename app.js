@@ -21,6 +21,7 @@ const providerClass = (provider) => {
   if (p.includes("cursor")) return "cursor";
   if (p.includes("github")) return "github";
   if (p.includes("minimax")) return "minimax";
+  if (p.includes("meta")) return "meta";
   if (p.includes("z.ai") || p.includes("zhipu")) return "zai";
   return "";
 };
@@ -28,6 +29,10 @@ const providerClass = (provider) => {
 const planLabel = (p) => `${p.product} ${p.planName}${p.model ? ` · ${p.model}` : ""}`;
 
 const isMeasured = (p) => p.measured === true;
+
+const isApi = (p) => p.category === "api";
+
+const priceLabel = (p) => (isApi(p) ? `${money(p.stickerUSD)} spend` : `${money(p.stickerUSD)}/mo`);
 
 const sourceMap = (sources) =>
   Object.fromEntries((sources || []).map((s) => [s.id, s]));
@@ -38,8 +43,9 @@ async function loadData() {
   return res.json();
 }
 
-function filterAndSort(plans, { provider, sort, codingOnly, measuredOnly }) {
+function filterAndSort(plans, { provider, sort, codingOnly, measuredOnly, includeApi }) {
   let rows = [...plans];
+  if (!includeApi) rows = rows.filter((p) => !isApi(p));
   if (codingOnly) rows = rows.filter((p) => p.codingRelevant);
   if (measuredOnly) rows = rows.filter(isMeasured);
   if (provider !== "all") rows = rows.filter((p) => p.provider === provider);
@@ -143,7 +149,7 @@ function renderTable(rows, sources) {
               <span class="plan-provider">${p.provider}${p.includes ? ` · ${p.includes}` : ""}</span>
             </div>
           </td>
-          <td class="num sticker">${money(p.stickerUSD)}/mo</td>
+          <td class="num sticker">${priceLabel(p)}</td>
           <td class="num">${api}</td>
           <td class="num range">${range}</td>
           <td class="num">${mult}</td>
@@ -165,7 +171,7 @@ function renderCards(rows, sources) {
           <h3>${planLabel(p)}</h3>
           <div class="meta">${p.provider} · ${p.confidence || "unknown"} confidence${p.asOf ? ` · as of ${p.asOf}` : ""}</div>
           <div class="metrics">
-            <div class="metric"><span>You pay</span><strong class="sticker">${money(p.stickerUSD)}</strong></div>
+            <div class="metric"><span>You pay</span><strong class="sticker">${priceLabel(p)}</strong></div>
             <div class="metric"><span>API-eq</span><strong class="api-eq">${p.apiEqUSD != null ? money(p.apiEqUSD) : "—"}</strong></div>
             <div class="metric"><span>Range</span><strong>${moneyRange(p.apiEqLowUSD, p.apiEqHighUSD)}</strong></div>
             <div class="metric"><span>Multiplier</span><strong class="multiplier">${p.multiplier != null ? p.multiplier + "×" : "—"}</strong></div>
@@ -223,6 +229,7 @@ function wireControls(data) {
     sort: document.getElementById("sort-by").value,
     codingOnly: document.getElementById("coding-only").checked,
     measuredOnly: document.getElementById("measured-only").checked,
+    includeApi: document.getElementById("include-api").checked,
   });
 
   const sources = sourceMap(data.sources);
@@ -233,7 +240,7 @@ function wireControls(data) {
     renderChart(rows);
   };
 
-  for (const id of ["provider-filter", "sort-by", "coding-only", "measured-only"]) {
+  for (const id of ["provider-filter", "sort-by", "coding-only", "measured-only", "include-api"]) {
     document.getElementById(id).addEventListener("change", paint);
   }
   paint();
