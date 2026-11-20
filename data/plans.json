@@ -1,7 +1,7 @@
 {
   "updatedAt": "2026-11-19",
   "title": "AI Coding Subscription API-Equivalent Value",
-  "methodology": "API-equivalent value = a plan's full monthly usage limit priced at first-party API list rates. SemiAnalysis (Oct 5, 2026) metered every major subscription token type by token type (how far each usage meter moves per million input, cached-input, cache-write and output tokens), then priced the full allowance at API list prices. Because limits differ by model, Anthropic and OpenAI rows are now per plan × model. Where SemiAnalysis published both workloads, the primary value is the agentic mix (0.4% input, 96.6% cached input, 2.6% cache writes, 0.3% output) and the range runs from the chat mix (2% input, 75% cached input, 13% cache writes, 10% output) to agentic. Fable 5.1 can only use half of a Claude plan's limit, so its value leaves the other half for Opus/Sonnet. Cursor, Copilot, Gemini and SuperGrok rows were not part of the public SemiAnalysis figures and have not been re-checked since July 2026 (lower confidence). These are ceilings at full utilization; most users burn far less. Pay-per-token API rows (Meta Model API) are not subscriptions: they show the value of $100 of spend at the vendor's own standard list price, so a normal API is 1× and only discounted tiers rise above it.",
+  "methodology": "API-equivalent value = a plan's full monthly usage limit priced at first-party API list rates. SemiAnalysis (Oct 5, 2026) metered every major subscription token type by token type (how far each usage meter moves per million input, cached-input, cache-write and output tokens), then priced the full allowance at API list prices. Because limits differ by model, Anthropic and OpenAI rows are now per plan × model. Where SemiAnalysis published both workloads, the primary value is the agentic mix (0.4% input, 96.6% cached input, 2.6% cache writes, 0.3% output) and the range runs from the chat mix (2% input, 75% cached input, 13% cache writes, 10% output) to agentic. Fable 5.1 can only use half of a Claude plan's limit, so its value leaves the other half for Opus/Sonnet. Cursor, Copilot, Gemini and SuperGrok rows were not part of the public SemiAnalysis figures and have not been re-checked since July 2026 (lower confidence). These are ceilings at full utilization; most users burn far less. Pay-per-token API rows (Meta Model API) are not subscriptions: they show the value of $100 of spend at the vendor's own standard list price, so a normal API is 1× and only discounted tiers rise above it. Xiaomi MiMo Token Plan values are computed from Xiaomi's published credit-per-token rates and API list prices (not measured by SemiAnalysis); range runs from V2.6-Flash at peak to V2.6-Pro used entirely off-peak.",
   "sources": [
     {
       "id": "semianalysis",
@@ -44,6 +44,18 @@
       "name": "Kilo Code pricing",
       "url": "https://kilo.ai/pricing",
       "note": "Free for individuals; models billed at provider rates with 0% markup, or bring your own key."
+    },
+    {
+      "id": "mimo-tokenplan",
+      "name": "Xiaomi MiMo Token Plan",
+      "url": "https://mimo.mi.com/docs/en-US/tokenplan/Token Plan/subscription",
+      "note": "Lite $6 / 4.1B, Standard $16 / 11B, Pro $50 / 38B, Max $100 / 82B credits per month. V2.6-Pro: 2.5 / 300 / 600 credits per cached-input / input / output token; V2.6-Flash: 2 / 100 / 200. Off-peak (16:00–24:00 UTC) consumption ×0.8."
+    },
+    {
+      "id": "mimo-payg",
+      "name": "Xiaomi MiMo pay-as-you-go pricing",
+      "url": "https://mimo.mi.com/docs/en-US/price/pay-as-you-go",
+      "note": "Overseas per 1M tokens — V2.6-Pro: $0.435 input / $0.0036 cached / $0.87 output; V2.6-Flash: $0.14 / $0.0028 / $0.28."
     },
     {
       "id": "semianalysis-june",
@@ -675,6 +687,90 @@
       "codingRelevant": true,
       "includes": "Pay per token · via Kilo Code or any bring-your-own-key tool · no training on your data",
       "notes": "Pay-as-you-go baseline: you get exactly list-price value (1×). Shown for comparison with the Contributor tier and the flat-rate plans."
+    },
+    {
+      "id": "mimo-lite",
+      "provider": "Xiaomi",
+      "product": "MiMo Token Plan",
+      "planName": "Lite",
+      "model": "V2.6-Pro",
+      "modelTier": "mid",
+      "category": "subscription",
+      "stickerUSD": 6,
+      "apiEqUSD": 6,
+      "apiEqLowUSD": 6,
+      "apiEqHighUSD": 7,
+      "multiplier": 0.99,
+      "confidence": "high",
+      "measured": false,
+      "asOf": "2026-11",
+      "sourceId": "mimo-tokenplan",
+      "codingRelevant": true,
+      "includes": "4.1B credits/mo · MiMo Code (free, open source) or any OpenAI-compatible tool",
+      "notes": "Computed from Xiaomi's credit table and API list prices: one credit is worth the same on every token type, so the workload mix doesn't matter. V2.6-Pro $6; Flash $6; all off-peak $7 (1.24×). Essentially prepaid API usage, not a subsidy."
+    },
+    {
+      "id": "mimo-standard",
+      "provider": "Xiaomi",
+      "product": "MiMo Token Plan",
+      "planName": "Standard",
+      "model": "V2.6-Pro",
+      "modelTier": "mid",
+      "category": "subscription",
+      "stickerUSD": 16,
+      "apiEqUSD": 16,
+      "apiEqLowUSD": 15,
+      "apiEqHighUSD": 20,
+      "multiplier": 1.0,
+      "confidence": "high",
+      "measured": false,
+      "asOf": "2026-11",
+      "sourceId": "mimo-tokenplan",
+      "codingRelevant": true,
+      "includes": "11B credits/mo · MiMo Code (free, open source) or any OpenAI-compatible tool",
+      "notes": "Computed from Xiaomi's credit table and API list prices: one credit is worth the same on every token type, so the workload mix doesn't matter. V2.6-Pro $16; Flash $15; all off-peak $20 (1.25×). Essentially prepaid API usage, not a subsidy."
+    },
+    {
+      "id": "mimo-pro",
+      "provider": "Xiaomi",
+      "product": "MiMo Token Plan",
+      "planName": "Pro",
+      "model": "V2.6-Pro",
+      "modelTier": "mid",
+      "category": "subscription",
+      "stickerUSD": 50,
+      "apiEqUSD": 55,
+      "apiEqLowUSD": 53,
+      "apiEqHighUSD": 69,
+      "multiplier": 1.1,
+      "confidence": "high",
+      "measured": false,
+      "asOf": "2026-11",
+      "sourceId": "mimo-tokenplan",
+      "codingRelevant": true,
+      "includes": "38B credits/mo · MiMo Code (free, open source) or any OpenAI-compatible tool",
+      "notes": "Computed from Xiaomi's credit table and API list prices: one credit is worth the same on every token type, so the workload mix doesn't matter. V2.6-Pro $55; Flash $53; all off-peak $69 (1.38×). Essentially prepaid API usage, not a subsidy."
+    },
+    {
+      "id": "mimo-max",
+      "provider": "Xiaomi",
+      "product": "MiMo Token Plan",
+      "planName": "Max",
+      "model": "V2.6-Pro",
+      "modelTier": "mid",
+      "category": "subscription",
+      "stickerUSD": 100,
+      "apiEqUSD": 119,
+      "apiEqLowUSD": 115,
+      "apiEqHighUSD": 149,
+      "multiplier": 1.19,
+      "confidence": "high",
+      "measured": false,
+      "asOf": "2026-11",
+      "sourceId": "mimo-tokenplan",
+      "codingRelevant": true,
+      "includes": "82B credits/mo · MiMo Code (free, open source) or any OpenAI-compatible tool",
+      "notes": "Computed from Xiaomi's credit table and API list prices: one credit is worth the same on every token type, so the workload mix doesn't matter. V2.6-Pro $119; Flash $115; all off-peak $149 (1.49×). Essentially prepaid API usage, not a subsidy."
     }
   ]
 }

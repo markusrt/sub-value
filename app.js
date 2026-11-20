@@ -22,6 +22,7 @@ const providerClass = (provider) => {
   if (p.includes("github")) return "github";
   if (p.includes("minimax")) return "minimax";
   if (p.includes("meta")) return "meta";
+  if (p.includes("xiaomi")) return "xiaomi";
   if (p.includes("z.ai") || p.includes("zhipu")) return "zai";
   return "";
 };

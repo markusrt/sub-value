@@ -21,6 +21,8 @@ Lower tiers (Claude Pro / Max, ChatGPT Plus / Pro 100 / Pro 500) and MiniMax / G
 
 **Pay-per-token APIs:** the Meta Model API rows (usable with Kilo Code or any bring-your-own-key tool) are not subscriptions. They show $100 of spend at Meta's standard list price: Standard is 1×, while the Contributor tier — where Meta may train on your prompts and outputs — works out to ~35× for agentic coding and ~20× for chat. A "Include pay-per-token APIs" toggle hides them.
 
+**Xiaomi MiMo Token Plan** (used by the free MiMo Code agent) is computed from Xiaomi's own credit and API price tables: roughly 1×–1.2× at peak, up to ~1.5× off-peak — prepaid API usage rather than a subsidy.
+
 These are **ceilings at full utilization** — not typical user spend. Values differ by model, so Claude and ChatGPT plans have one row per model.
 
 The June 2026 SemiAnalysis numbers (Claude $400/$2k/$8k, ChatGPT $700/$3.5k/$14k) are superseded: OpenAI halved its $200 plan, both labs changed API prices, and Anthropic renamed Max 5× → Max and Max 20× → Ultra on Oct 30, 2026.
