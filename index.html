@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=2026-11-20b" />
+  <link rel="stylesheet" href="styles.css?v=2026-11-20c" />
 </head>
 <body>
   <div class="noise" aria-hidden="true"></div>
@@ -97,6 +97,7 @@
           <th class="num">× multiplier</th>
           <th class="num" title="Artificial Analysis Coding Agent Index v2.1 (model in its own coding agent, max effort)">Coding score</th>
           <th class="num" title="API-equivalent value ÷ cost per solved task (cost per task ÷ score)">Solved tasks</th>
+          <th class="num ref-col" title="Reference only: Artificial Analysis Intelligence Index v5 (general benchmark) score and cost per task. Not comparable with the coding score.">General index (ref.)</th>
           <th>Confidence</th>
           <th>Source</th>
         </tr>
@@ -188,6 +189,21 @@
       </table>
     </div>
     <p class="fineprint" id="coding-note"></p>
+    <h4>General Intelligence Index (reference)</h4>
+    <p>
+      For models without a coding-agent result (MiMo, MiniMax) the "General index" column shows Artificial Analysis's
+      broader Intelligence Index v5: one score across agentic work, coding, science and knowledge, plus measured cost per task.
+      It is a different scale from the coding score — use it to compare models with each other, not with coding scores.
+    </p>
+    <div class="table-wrap">
+      <table class="plans-table">
+        <thead>
+          <tr><th>Model</th><th>Effort</th><th class="num">Index score</th><th class="num">Cost per task</th></tr>
+        </thead>
+        <tbody id="general-body"></tbody>
+      </table>
+    </div>
+    <p class="fineprint" id="general-note"></p>
     <h3>Pay-per-token APIs (Meta Model API)</h3>
     <p>
       Meta sells Muse Spark 1.3 at two prices: Standard ($1.25 input / $0.15 cached input / $4.25 output per million tokens)
@@ -228,6 +244,6 @@
     <p class="mono">sub-value · open data in <a href="data/plans.json">data/plans.json</a></p>
   </footer>
 
-  <script src="app.js?v=2026-11-20b" type="module"></script>
+  <script src="app.js?v=2026-11-20c" type="module"></script>
 </body>
 </html>

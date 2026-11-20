@@ -36,6 +36,7 @@ const isApi = (p) => p.category === "api";
 const priceLabel = (p) => (isApi(p) ? `${money(p.stickerUSD)} spend` : `${money(p.stickerUSD)}/mo`);
 
 let CODING = {};
+let GENERAL = {};
 
 const coding = (p) => {
   const c = p.codingKey ? CODING[p.codingKey] : null;
@@ -43,6 +44,14 @@ const coding = (p) => {
   const perSolved = c.costPerTask / (c.score / 100);
   const solved = p.apiEqUSD / perSolved;
   return { c, perSolved, solved, perDollar: solved / p.stickerUSD };
+};
+
+const generalCell = (p) => {
+  const g = p.generalKey ? GENERAL[p.generalKey] : null;
+  if (!g || p.apiEqUSD == null) return `<span class="na">—</span>`;
+  const perDollar = p.apiEqUSD / g.costPerTask / p.stickerUSD;
+  const title = `${g.label} (${g.effort}): Intelligence Index ${g.index}, $${g.costPerTask.toFixed(2)} per task → ${Math.round(p.apiEqUSD / g.costPerTask).toLocaleString("en-US")} tasks`;
+  return `<span class="ref-score" title="${title}">${g.index}</span><span class="plan-provider source-asof">$${g.costPerTask.toFixed(2)}/task · ${perDollar >= 10 ? Math.round(perDollar) : perDollar.toFixed(1)} per $</span>`;
 };
 
 const num = (n) => Math.round(n).toLocaleString("en-US");
@@ -185,6 +194,7 @@ function renderTable(rows, sources) {
           <td class="num">${mult}</td>
           <td class="num">${scoreCell(p)}</td>
           <td class="num">${solvedCell(p)}</td>
+          <td class="num ref-col">${generalCell(p)}</td>
           <td>${conf}</td>
           <td>${sourceCell}</td>
         </tr>
@@ -209,6 +219,7 @@ function renderCards(rows, sources) {
             <div class="metric"><span>Range</span><strong>${moneyRange(p.apiEqLowUSD, p.apiEqHighUSD)}</strong></div>
             <div class="metric"><span>Multiplier</span><strong class="multiplier">${p.multiplier != null ? p.multiplier + "×" : "—"}</strong></div>
             <div class="metric"><span>Coding score</span><strong class="tasks">${k ? `${k.c.score} (${k.c.harness})` : "—"}</strong></div>
+            <div class="metric"><span>General index (ref.)</span><strong>${p.generalKey && GENERAL[p.generalKey] ? GENERAL[p.generalKey].index : "—"}</strong></div>
             <div class="metric"><span>Solved tasks</span><strong class="tasks">${k ? `${num(k.solved)}${isApi(p) ? "" : "/mo"} · ${k.perDollar.toFixed(1)} per $` : "—"}</strong></div>
           </div>
           <p class="notes">${p.notes || ""}${src ? ` <a href="${src.url}" target="_blank" rel="noopener">Source</a>` : ""}</p>
@@ -269,6 +280,26 @@ function renderCodingTable(codingData) {
   if (note && codingData._note) note.textContent = codingData._note;
 }
 
+function renderGeneralTable(general) {
+  const root = document.getElementById("general-body");
+  if (!root) return;
+  root.innerHTML = Object.entries(general)
+    .filter(([k]) => !k.startsWith("_"))
+    .sort(([, a], [, b]) => a.costPerTask - b.costPerTask)
+    .map(
+      ([, t]) => `
+        <tr>
+          <td><a class="source-link" href="${t.url}" target="_blank" rel="noopener">${t.label}</a></td>
+          <td>${t.effort}</td>
+          <td class="num">${t.index}</td>
+          <td class="num">$${t.costPerTask.toFixed(2)}</td>
+        </tr>`
+    )
+    .join("");
+  const note = document.getElementById("general-note");
+  if (note && general._note) note.textContent = general._note;
+}
+
 function renderSources(sources) {
   const list = document.getElementById("sources-list");
   list.innerHTML = sources
@@ -307,16 +338,18 @@ async function main() {
   try {
     const data = await loadData();
     CODING = data.codingAgent || {};
+    GENERAL = data.generalIndex || {};
     document.getElementById("updated-label").textContent = `Data as of ${data.updatedAt}`;
     document.getElementById("methodology-text").textContent = data.methodology;
     renderHero(data.plans);
     renderProviderOptions(data.plans);
     renderSources(data.sources);
     renderCodingTable(CODING);
+    renderGeneralTable(GENERAL);
     wireControls(data);
   } catch (err) {
     document.getElementById("plans-body").innerHTML =
-      `<tr><td colspan="9">Failed to load data: ${err.message}</td></tr>`;
+      `<tr><td colspan="10">Failed to load data: ${err.message}</td></tr>`;
     console.error(err);
   }
 }

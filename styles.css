@@ -678,3 +678,12 @@ input[type="checkbox"]:focus-visible {
   color: var(--ink-faint);
   margin-top: 0.5rem;
 }
+
+.ref-col {
+  opacity: 0.75;
+}
+
+.ref-score {
+  font-weight: 500;
+  color: var(--ink-faint);
+}
