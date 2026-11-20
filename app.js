@@ -35,24 +35,29 @@ const isApi = (p) => p.category === "api";
 
 const priceLabel = (p) => (isApi(p) ? `${money(p.stickerUSD)} spend` : `${money(p.stickerUSD)}/mo`);
 
-let TASK_COSTS = {};
+let CODING = {};
 
-const taskStats = (p) => {
-  const tc = p.taskModel ? TASK_COSTS[p.taskModel] : null;
-  if (!tc || p.apiEqUSD == null) return null;
-  return { tc, total: p.apiEqUSD / tc.costPerTask, perDollar: p.apiEqUSD / tc.costPerTask / p.stickerUSD };
+const coding = (p) => {
+  const c = p.codingKey ? CODING[p.codingKey] : null;
+  if (!c || p.apiEqUSD == null) return null;
+  const perSolved = c.costPerTask / (c.score / 100);
+  const solved = p.apiEqUSD / perSolved;
+  return { c, perSolved, solved, perDollar: solved / p.stickerUSD };
 };
 
 const num = (n) => Math.round(n).toLocaleString("en-US");
 
-const tasksLabel = (p) => {
-  const t = taskStats(p);
-  if (!t) return null;
-  return {
-    main: `${num(t.total)}${isApi(p) ? "" : "/mo"}`,
-    sub: `${t.perDollar >= 10 ? num(t.perDollar) : t.perDollar.toFixed(1)} per $`,
-    title: `${t.tc.label} (${t.tc.effort}): $${t.tc.costPerTask.toFixed(2)} per Artificial Analysis task, index ${t.tc.index}`,
-  };
+const scoreCell = (p) => {
+  const k = coding(p);
+  if (!k) return `<span class="na">—</span>`;
+  return `<span class="tasks">${k.c.score}</span><span class="plan-provider source-asof">${k.c.harness}, ${k.c.effort}</span>`;
+};
+
+const solvedCell = (p) => {
+  const k = coding(p);
+  if (!k) return `<span class="na">—</span>`;
+  const title = `${k.c.label} in ${k.c.harness} (${k.c.effort}): $${k.c.costPerTask.toFixed(2)} per task at score ${k.c.score} → $${k.perSolved.toFixed(2)} per solved task`;
+  return `<span class="tasks" title="${title}">${num(k.solved)}${isApi(p) ? "" : "/mo"}</span><span class="plan-provider source-asof">${k.perDollar.toFixed(1)} per $</span>`;
 };
 
 const sourceMap = (sources) =>
@@ -64,8 +69,9 @@ async function loadData() {
   return res.json();
 }
 
-function filterAndSort(plans, { provider, sort, codingOnly, measuredOnly, includeApi }) {
+function filterAndSort(plans, { provider, sort, codingOnly, measuredOnly, includeApi, minScore }) {
   let rows = [...plans];
+  if (minScore > 0) rows = rows.filter((p) => (coding(p)?.c.score ?? -1) >= minScore);
   if (!includeApi) rows = rows.filter((p) => !isApi(p));
   if (codingOnly) rows = rows.filter((p) => p.codingRelevant);
   if (measuredOnly) rows = rows.filter(isMeasured);
@@ -73,7 +79,7 @@ function filterAndSort(plans, { provider, sort, codingOnly, measuredOnly, includ
 
   const val = (p) => p.apiEqUSD ?? -1;
   const mult = (p) => p.multiplier ?? -1;
-  const tpd = (p) => taskStats(p)?.perDollar ?? -1;
+  const spd = (p) => coding(p)?.perDollar ?? -1;
 
   rows.sort((a, b) => {
     switch (sort) {
@@ -81,8 +87,8 @@ function filterAndSort(plans, { provider, sort, codingOnly, measuredOnly, includ
         return val(b) - val(a);
       case "sticker":
         return a.stickerUSD - b.stickerUSD;
-      case "tasks":
-        return tpd(b) - tpd(a) || val(b) - val(a);
+      case "solved":
+        return spd(b) - spd(a) || val(b) - val(a);
       case "provider":
         return a.provider.localeCompare(b.provider) || a.stickerUSD - b.stickerUSD;
       case "multiplier":
@@ -157,10 +163,6 @@ function renderTable(rows, sources) {
         p.apiEqLowUSD != null
           ? moneyRange(p.apiEqLowUSD, p.apiEqHighUSD)
           : "—";
-      const tl = tasksLabel(p);
-      const tasks = tl
-        ? `<span class="tasks" title="${tl.title}">${tl.main}</span><span class="plan-provider source-asof">${tl.sub}</span>`
-        : `<span class="na">—</span>`;
       const conf = p.confidence
         ? `<span class="badge ${p.confidence}">${p.confidence}</span>`
         : `<span class="na">—</span>`;
@@ -181,7 +183,8 @@ function renderTable(rows, sources) {
           <td class="num">${api}</td>
           <td class="num range">${range}</td>
           <td class="num">${mult}</td>
-          <td class="num">${tasks}</td>
+          <td class="num">${scoreCell(p)}</td>
+          <td class="num">${solvedCell(p)}</td>
           <td>${conf}</td>
           <td>${sourceCell}</td>
         </tr>
@@ -195,7 +198,7 @@ function renderCards(rows, sources) {
   root.innerHTML = rows
     .map((p) => {
       const src = p.sourceId ? sources[p.sourceId] : null;
-      const tl = tasksLabel(p);
+      const k = coding(p);
       return `
         <article class="plan-card">
           <h3>${planLabel(p)}</h3>
@@ -205,7 +208,8 @@ function renderCards(rows, sources) {
             <div class="metric"><span>API-eq</span><strong class="api-eq">${p.apiEqUSD != null ? money(p.apiEqUSD) : "—"}</strong></div>
             <div class="metric"><span>Range</span><strong>${moneyRange(p.apiEqLowUSD, p.apiEqHighUSD)}</strong></div>
             <div class="metric"><span>Multiplier</span><strong class="multiplier">${p.multiplier != null ? p.multiplier + "×" : "—"}</strong></div>
-            <div class="metric"><span>Benchmark tasks</span><strong class="tasks" title="${tl ? tl.title : ""}">${tl ? `${tl.main} · ${tl.sub}` : "—"}</strong></div>
+            <div class="metric"><span>Coding score</span><strong class="tasks">${k ? `${k.c.score} (${k.c.harness})` : "—"}</strong></div>
+            <div class="metric"><span>Solved tasks</span><strong class="tasks">${k ? `${num(k.solved)}${isApi(p) ? "" : "/mo"} · ${k.perDollar.toFixed(1)} per $` : "—"}</strong></div>
           </div>
           <p class="notes">${p.notes || ""}${src ? ` <a href="${src.url}" target="_blank" rel="noopener">Source</a>` : ""}</p>
         </article>
@@ -244,24 +248,25 @@ function renderChart(rows) {
   });
 }
 
-function renderTaskCosts(taskCosts) {
-  const root = document.getElementById("task-costs-body");
+function renderCodingTable(codingData) {
+  const root = document.getElementById("coding-body");
   if (!root) return;
-  const rows = Object.entries(taskCosts).filter(([k]) => !k.startsWith("_"));
+  const rows = Object.entries(codingData).filter(([k]) => !k.startsWith("_"));
   root.innerHTML = rows
-    .sort(([, a], [, b]) => a.costPerTask - b.costPerTask)
+    .sort(([, a], [, b]) => a.costPerTask / a.score - b.costPerTask / b.score)
     .map(
       ([, t]) => `
         <tr>
           <td><a class="source-link" href="${t.url}" target="_blank" rel="noopener">${t.label}</a></td>
-          <td>${t.effort}</td>
-          <td class="num">${t.index}</td>
+          <td>${t.harness}, ${t.effort}</td>
+          <td class="num">${t.score}</td>
           <td class="num">$${t.costPerTask.toFixed(2)}</td>
+          <td class="num">$${(t.costPerTask / (t.score / 100)).toFixed(2)}</td>
         </tr>`
     )
     .join("");
-  const note = document.getElementById("task-costs-note");
-  if (note && taskCosts._note) note.textContent = taskCosts._note;
+  const note = document.getElementById("coding-note");
+  if (note && codingData._note) note.textContent = codingData._note;
 }
 
 function renderSources(sources) {
@@ -281,6 +286,7 @@ function wireControls(data) {
     codingOnly: document.getElementById("coding-only").checked,
     measuredOnly: document.getElementById("measured-only").checked,
     includeApi: document.getElementById("include-api").checked,
+    minScore: Number(document.getElementById("min-score").value),
   });
 
   const sources = sourceMap(data.sources);
@@ -291,7 +297,7 @@ function wireControls(data) {
     renderChart(rows);
   };
 
-  for (const id of ["provider-filter", "sort-by", "coding-only", "measured-only", "include-api"]) {
+  for (const id of ["provider-filter", "sort-by", "coding-only", "measured-only", "include-api", "min-score"]) {
     document.getElementById(id).addEventListener("change", paint);
   }
   paint();
@@ -300,17 +306,17 @@ function wireControls(data) {
 async function main() {
   try {
     const data = await loadData();
-    TASK_COSTS = data.taskCosts || {};
+    CODING = data.codingAgent || {};
     document.getElementById("updated-label").textContent = `Data as of ${data.updatedAt}`;
     document.getElementById("methodology-text").textContent = data.methodology;
     renderHero(data.plans);
     renderProviderOptions(data.plans);
     renderSources(data.sources);
-    renderTaskCosts(TASK_COSTS);
+    renderCodingTable(CODING);
     wireControls(data);
   } catch (err) {
     document.getElementById("plans-body").innerHTML =
-      `<tr><td colspan="8">Failed to load data: ${err.message}</td></tr>`;
+      `<tr><td colspan="9">Failed to load data: ${err.message}</td></tr>`;
     console.error(err);
   }
 }

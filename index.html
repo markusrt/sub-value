@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=2026-11-20" />
+  <link rel="stylesheet" href="styles.css?v=2026-11-20b" />
 </head>
 <body>
   <div class="noise" aria-hidden="true"></div>
@@ -52,7 +52,7 @@
       <select id="sort-by">
         <option value="multiplier">Multiplier (high → low)</option>
         <option value="apiEq">API-equivalent $ (high → low)</option>
-        <option value="tasks">Benchmark tasks per $ (high → low)</option>
+        <option value="solved">Solved coding tasks per $ (high → low)</option>
         <option value="sticker">Sticker price (low → high)</option>
         <option value="provider">Provider</option>
       </select>
@@ -68,6 +68,15 @@
         <input type="checkbox" id="measured-only" />
         Measured by SemiAnalysis only
       </label>
+    </div>
+    <div class="control-group">
+      <label for="min-score">Min. coding score</label>
+      <select id="min-score">
+        <option value="0">Any</option>
+        <option value="40">40+</option>
+        <option value="50">50+</option>
+        <option value="55">55+</option>
+      </select>
     </div>
     <div class="control-group check">
       <label>
@@ -86,7 +95,8 @@
           <th class="num">API-eq (primary)</th>
           <th class="num">Range</th>
           <th class="num">× multiplier</th>
-          <th class="num" title="API-equivalent value ÷ Artificial Analysis cost per Intelligence Index task">Benchmark tasks</th>
+          <th class="num" title="Artificial Analysis Coding Agent Index v2.1 (model in its own coding agent, max effort)">Coding score</th>
+          <th class="num" title="API-equivalent value ÷ cost per solved task (cost per task ÷ score)">Solved tasks</th>
           <th>Confidence</th>
           <th>Source</th>
         </tr>
@@ -114,7 +124,7 @@
       <li><strong>Value depends on the model.</strong> One plan is worth very different amounts on Sonnet, Opus or Fable (or Sol vs Astra). Claude plans let Fable use only half the limit.</li>
       <li><strong>API-equivalent ≠ lab cost.</strong> List API prices are not the same as a lab’s marginal cost of serving a subscription token.</li>
       <li><strong>Harness matters.</strong> Claude Code vs Codex vs Cursor change tokens per task, so equal API-equivalent value does not mean equal work done.</li>
-      <li><strong>Multiplier ≠ cheap.</strong> The multiplier compares a plan with its own vendor's API price. "Benchmark tasks" converts every row into the same unit — tasks of the Artificial Analysis Intelligence Index — so cheap-but-capable models like MiMo show up even though their plans sit at ~1×. Scores differ too: compare the index column below before treating tasks as equal work.</li>
+      <li><strong>Multiplier ≠ cheap.</strong> The multiplier compares a plan with its own vendor's API price. "Coding score" and "Solved tasks" put every row on the same footing: how good the model is in a real coding agent, and how many tasks the plan pays for once failures are counted. Cheap but weaker models, or strong models that need many tokens, show up here.</li>
       <li><strong>API rows are not plans.</strong> Meta Model API rows show what $100 of spend buys at Meta's own standard price. The Contributor tier's ~35× comes from letting Meta train on your prompts and outputs — fine for hobby code, not for anything confidential.</li>
       <li><strong>Grok is opaque.</strong> SuperGrok shows a shared weekly <em>%</em> pool with no official dollar size — numbers are reverse-engineered and low confidence.</li>
     </ul>
@@ -158,22 +168,26 @@
       <strong>SuperGrok</strong> has no official dollar pool — show the range, not just the midpoint.
       These four providers have not been re-checked since July 2026.
     </p>
-    <h3>Benchmark tasks: cost per task across vendors</h3>
+    <h3>Coding quality per dollar</h3>
     <p>
-      Token prices alone don't say what a model costs to get work done: models differ in how many tokens they use per task.
-      Artificial Analysis runs the same task set on every model and publishes the measured cost per task at list prices.
-      "Benchmark tasks" = API-equivalent value ÷ that cost. It is a general benchmark (agentic work, coding, knowledge,
-      reasoning), not coding in Claude Code, Codex or Kilo, and costs swing with the effort setting, so read it as an indicator.
+      The Artificial Analysis Coding Agent Index runs each model inside a coding agent (Claude Code, Codex, Muse Code,
+      Opencode …) on 322 real coding tasks and publishes the score and the measured API cost per task. A model that
+      solves more with fewer tokens gets a better score and a lower cost. Here, <em>cost per solved task</em> = cost per task
+      ÷ score, and <em>solved tasks</em> = a row's API-equivalent value ÷ cost per solved task. Score and cost stay separate
+      numbers — use the minimum-score filter to find the cheapest setup that is good enough. Caveats: harness and model are
+      scored together, all models are shown at max effort (Claude Code defaults to medium), the score averages three
+      benchmarks rather than being a strict pass rate, and models Artificial Analysis hasn't tested (MiMo, MiniMax,
+      Grok/Gemini/Cursor/Copilot plans here) show —.
     </p>
     <div class="table-wrap">
       <table class="plans-table">
         <thead>
-          <tr><th>Model</th><th>Effort</th><th class="num">Index score</th><th class="num">Cost per task</th></tr>
+          <tr><th>Model</th><th>Agent, effort</th><th class="num">Coding score</th><th class="num">Cost per task</th><th class="num">Cost per solved task</th></tr>
         </thead>
-        <tbody id="task-costs-body"></tbody>
+        <tbody id="coding-body"></tbody>
       </table>
     </div>
-    <p class="fineprint" id="task-costs-note"></p>
+    <p class="fineprint" id="coding-note"></p>
     <h3>Pay-per-token APIs (Meta Model API)</h3>
     <p>
       Meta sells Muse Spark 1.3 at two prices: Standard ($1.25 input / $0.15 cached input / $4.25 output per million tokens)
@@ -214,6 +228,6 @@
     <p class="mono">sub-value · open data in <a href="data/plans.json">data/plans.json</a></p>
   </footer>
 
-  <script src="app.js?v=2026-11-20" type="module"></script>
+  <script src="app.js?v=2026-11-20b" type="module"></script>
 </body>
 </html>

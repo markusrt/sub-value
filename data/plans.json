@@ -1,7 +1,7 @@
 {
   "updatedAt": "2026-11-19",
   "title": "AI Coding Subscription API-Equivalent Value",
-  "methodology": "API-equivalent value = a plan's full monthly usage limit priced at first-party API list rates. SemiAnalysis (Oct 5, 2026) metered every major subscription token type by token type (how far each usage meter moves per million input, cached-input, cache-write and output tokens), then priced the full allowance at API list prices. Because limits differ by model, Anthropic and OpenAI rows are now per plan × model. Where SemiAnalysis published both workloads, the primary value is the agentic mix (0.4% input, 96.6% cached input, 2.6% cache writes, 0.3% output) and the range runs from the chat mix (2% input, 75% cached input, 13% cache writes, 10% output) to agentic. Fable 5.1 can only use half of a Claude plan's limit, so its value leaves the other half for Opus/Sonnet. Cursor, Copilot, Gemini and SuperGrok rows were not part of the public SemiAnalysis figures and have not been re-checked since July 2026 (lower confidence). These are ceilings at full utilization; most users burn far less. Pay-per-token API rows (Meta Model API) are not subscriptions: they show the value of $100 of spend at the vendor's own standard list price, so a normal API is 1× and only discounted tiers rise above it. Xiaomi MiMo Token Plan values are computed from Xiaomi's published credit-per-token rates and API list prices (not measured by SemiAnalysis); range runs from V2.6-Flash at peak to V2.6-Pro used entirely off-peak. Benchmark tasks per month = API-equivalent value ÷ Artificial Analysis's measured cost per Intelligence Index task (v5, one effort level per model). It normalizes for token prices and verbosity across vendors, but it is a general benchmark, not coding in a specific agent, so treat it as an indicator.",
+  "methodology": "API-equivalent value = a plan's full monthly usage limit priced at first-party API list rates. SemiAnalysis (Oct 5, 2026) metered every major subscription token type by token type (how far each usage meter moves per million input, cached-input, cache-write and output tokens), then priced the full allowance at API list prices. Because limits differ by model, Anthropic and OpenAI rows are now per plan × model. Where SemiAnalysis published both workloads, the primary value is the agentic mix (0.4% input, 96.6% cached input, 2.6% cache writes, 0.3% output) and the range runs from the chat mix (2% input, 75% cached input, 13% cache writes, 10% output) to agentic. Fable 5.1 can only use half of a Claude plan's limit, so its value leaves the other half for Opus/Sonnet. Cursor, Copilot, Gemini and SuperGrok rows were not part of the public SemiAnalysis figures and have not been re-checked since July 2026 (lower confidence). These are ceilings at full utilization; most users burn far less. Pay-per-token API rows (Meta Model API) are not subscriptions: they show the value of $100 of spend at the vendor's own standard list price, so a normal API is 1× and only discounted tiers rise above it. Xiaomi MiMo Token Plan values are computed from Xiaomi's published credit-per-token rates and API list prices (not measured by SemiAnalysis); range runs from V2.6-Flash at peak to V2.6-Pro used entirely off-peak. Coding score and solved tasks come from the Artificial Analysis Coding Agent Index v2.1 (model in its own coding agent, max effort): cost per solved task = cost per task ÷ score, and solved tasks per month = API-equivalent value ÷ cost per solved task. The score is an average of three benchmarks, so 'solved' is an approximation; models without a published result show —.",
   "sources": [
     {
       "id": "semianalysis",
@@ -58,10 +58,10 @@
       "note": "Overseas per 1M tokens — V2.6-Pro: $0.435 input / $0.0036 cached / $0.87 output; V2.6-Flash: $0.14 / $0.0028 / $0.28."
     },
     {
-      "id": "aa-index",
-      "name": "Artificial Analysis Intelligence Index v5",
-      "url": "https://artificialanalysis.ai/articles/artificial-analysis-intelligence-index-v5",
-      "note": "Independent benchmark suite (agentic work, coding, knowledge, reasoning); publishes measured cost per task at list prices for each model and effort level."
+      "id": "aa-coding",
+      "name": "Artificial Analysis Coding Agent Index v2.1",
+      "url": "https://artificialanalysis.ai/agents/coding-agents",
+      "note": "Scores a coding agent as harness + model + effort on 322 coding tasks and publishes measured cost per task at list prices."
     },
     {
       "id": "semianalysis-june",
@@ -127,7 +127,7 @@
       "includes": "Claude Code, Opus/Sonnet, Projects",
       "notes": "Workload not labeled in the public figures (likely agentic). Pro's Opus limit was raised ~50% with Opus 5.5, but the API price cut still lowered the dollar value. June study (different method): ~$400.",
       "category": "subscription",
-      "taskModel": "opus-5.5"
+      "codingKey": "opus-5.5"
     },
     {
       "id": "claude-max-opus",
@@ -149,7 +149,7 @@
       "includes": "5× Pro usage · Claude Code",
       "notes": "Renamed from Max 5× on Oct 30, 2026 (same price and limits). Workload not labeled (likely agentic). June study: ~$2,000.",
       "category": "subscription",
-      "taskModel": "opus-5.5"
+      "codingKey": "opus-5.5"
     },
     {
       "id": "claude-max-fable",
@@ -171,7 +171,7 @@
       "includes": "Fable capped at 50% of the plan limit",
       "notes": "Fable can only use half of the limit; the other half stays available for Opus/Sonnet.",
       "category": "subscription",
-      "taskModel": "fable-5.1"
+      "codingKey": "fable-5.1"
     },
     {
       "id": "claude-ultra-sonnet",
@@ -193,7 +193,7 @@
       "includes": "Weekly limit · no 5-hour limit (verified) · Claude Code",
       "notes": "Agentic $12,529 (62.6×), chat $7,009 (35.0×). Highest API-equivalent value of any plan in the study.",
       "category": "subscription",
-      "taskModel": "sonnet-5.5"
+      "codingKey": "sonnet-5.5"
     },
     {
       "id": "claude-ultra-opus",
@@ -215,7 +215,7 @@
       "includes": "Weekly limit · no 5-hour limit (verified) · Claude Code",
       "notes": "Agentic $11,726 (58.6×), chat $9,200 (46.0×). ~5.6× the mid-tier value of ChatGPT Pro 200 (GPT-6.1 Sol). Break-even for Anthropic at ~21% utilization. June study (whole plan): ~$8,000.",
       "category": "subscription",
-      "taskModel": "opus-5.5"
+      "codingKey": "opus-5.5"
     },
     {
       "id": "claude-ultra-fable",
@@ -237,7 +237,7 @@
       "includes": "Fable capped at 50% of the plan limit",
       "notes": "Agentic $2,485, chat $2,480 (both 12.4×) — using only half the plan; the other half stays available for Opus/Sonnet.",
       "category": "subscription",
-      "taskModel": "fable-5.1"
+      "codingKey": "fable-5.1"
     },
     {
       "id": "chatgpt-plus-sol",
@@ -259,7 +259,7 @@
       "includes": "Codex CLI/app (rate-limited), GPT models",
       "notes": "June study: ~$700.",
       "category": "subscription",
-      "taskModel": "sol-6.1"
+      "codingKey": "sol-6.1"
     },
     {
       "id": "chatgpt-plus-astra",
@@ -281,7 +281,7 @@
       "includes": "Codex CLI/app (rate-limited), GPT models",
       "notes": "Flagship model on the entry plan.",
       "category": "subscription",
-      "taskModel": "astra-6"
+      "codingKey": "astra-6"
     },
     {
       "id": "chatgpt-pro100-sol",
@@ -303,7 +303,7 @@
       "includes": "Higher Codex / ChatGPT usage windows",
       "notes": "OpenAI removed the relative usage multipliers (5×/20×) from its pricing page. June study: ~$3,500.",
       "category": "subscription",
-      "taskModel": "sol-6.1"
+      "codingKey": "sol-6.1"
     },
     {
       "id": "chatgpt-pro100-astra",
@@ -325,7 +325,7 @@
       "includes": "Higher Codex / ChatGPT usage windows",
       "notes": "About 2× Plus's per-dollar value on Astra.",
       "category": "subscription",
-      "taskModel": "astra-6"
+      "codingKey": "astra-6"
     },
     {
       "id": "chatgpt-pro200-sol",
@@ -347,7 +347,7 @@
       "includes": "No 5-hour limit · Codex",
       "notes": "OpenAI halved the $200 plan's tokens per model (legacy limits ended Oct 29). Before the cut ~$5,904 on GPT-6 Sol. June study: ~$14,000.",
       "category": "subscription",
-      "taskModel": "sol-6.1"
+      "codingKey": "sol-6.1"
     },
     {
       "id": "chatgpt-pro200-astra",
@@ -369,7 +369,7 @@
       "includes": "No 5-hour limit · Codex",
       "notes": "Uses the whole plan (vs Fable 5.1, which leaves half of a Claude plan free). Before the cut ~$5,734.",
       "category": "subscription",
-      "taskModel": "astra-6"
+      "codingKey": "astra-6"
     },
     {
       "id": "chatgpt-pro500-sol",
@@ -391,7 +391,7 @@
       "includes": "New top tier added with the Pro 200 cut",
       "notes": "Offers ~21% more Astra than the old (pre-cut) $200 plan.",
       "category": "subscription",
-      "taskModel": "sol-6.1"
+      "codingKey": "sol-6.1"
     },
     {
       "id": "minimax-max",
@@ -412,8 +412,7 @@
       "codingRelevant": true,
       "includes": "Coding plan",
       "notes": "SemiAnalysis-measured; figure from a secondary summary of the paywalled section. MiniMax plans range ~19–24×.",
-      "category": "subscription",
-      "taskModel": "minimax-m3"
+      "category": "subscription"
     },
     {
       "id": "minimax-ultra",
@@ -434,8 +433,7 @@
       "codingRelevant": true,
       "includes": "Coding plan",
       "notes": "SemiAnalysis-measured; figure from a secondary summary of the paywalled section.",
-      "category": "subscription",
-      "taskModel": "minimax-m3"
+      "category": "subscription"
     },
     {
       "id": "zai-glm-max",
@@ -457,7 +455,7 @@
       "includes": "Coding plan",
       "notes": "SemiAnalysis-measured; figure from a secondary summary. GLM 5.3 plans range ~8–12× (Lite ~7.7×); GLM Flash on Max only ~$336 (~2×).",
       "category": "subscription",
-      "taskModel": "glm-5.3"
+      "codingKey": "glm-5.3"
     },
     {
       "id": "supergrok",
@@ -688,7 +686,7 @@
       "codingRelevant": true,
       "includes": "Pay per token · via Kilo Code or any bring-your-own-key tool · Meta trains on your prompts and outputs",
       "notes": "Not a subscription: value per $100 of spend, priced at Meta's Standard list rate. Agentic 35.3×, chat 19.9× (SemiAnalysis workload mixes; cache writes billed as normal input). Measured in Muse Spark tokens, which cost less than Opus or Sol tokens, so dollars are not comparable across vendors. Rate limit drops to 150 requests/min.",
-      "taskModel": "muse-spark-1.3"
+      "codingKey": "muse-spark-1.3"
     },
     {
       "id": "meta-api-standard",
@@ -710,7 +708,7 @@
       "codingRelevant": true,
       "includes": "Pay per token · via Kilo Code or any bring-your-own-key tool · no training on your data",
       "notes": "Pay-as-you-go baseline: you get exactly list-price value (1×). Shown for comparison with the Contributor tier and the flat-rate plans.",
-      "taskModel": "muse-spark-1.3"
+      "codingKey": "muse-spark-1.3"
     },
     {
       "id": "mimo-lite",
@@ -731,8 +729,7 @@
       "sourceId": "mimo-tokenplan",
       "codingRelevant": true,
       "includes": "4.1B credits/mo · MiMo Code (free, open source) or any OpenAI-compatible tool",
-      "notes": "Computed from Xiaomi's credit table and API list prices: one credit is worth the same on every token type, so the workload mix doesn't matter. V2.6-Pro $6; Flash $6; all off-peak $7 (1.24×). Essentially prepaid API usage, not a subsidy.",
-      "taskModel": "mimo-v2.6-pro"
+      "notes": "Computed from Xiaomi's credit table and API list prices: one credit is worth the same on every token type, so the workload mix doesn't matter. V2.6-Pro $6; Flash $6; all off-peak $7 (1.24×). Essentially prepaid API usage, not a subsidy."
     },
     {
       "id": "mimo-standard",
@@ -753,8 +750,7 @@
       "sourceId": "mimo-tokenplan",
       "codingRelevant": true,
       "includes": "11B credits/mo · MiMo Code (free, open source) or any OpenAI-compatible tool",
-      "notes": "Computed from Xiaomi's credit table and API list prices: one credit is worth the same on every token type, so the workload mix doesn't matter. V2.6-Pro $16; Flash $15; all off-peak $20 (1.25×). Essentially prepaid API usage, not a subsidy.",
-      "taskModel": "mimo-v2.6-pro"
+      "notes": "Computed from Xiaomi's credit table and API list prices: one credit is worth the same on every token type, so the workload mix doesn't matter. V2.6-Pro $16; Flash $15; all off-peak $20 (1.25×). Essentially prepaid API usage, not a subsidy."
     },
     {
       "id": "mimo-pro",
@@ -775,8 +771,7 @@
       "sourceId": "mimo-tokenplan",
       "codingRelevant": true,
       "includes": "38B credits/mo · MiMo Code (free, open source) or any OpenAI-compatible tool",
-      "notes": "Computed from Xiaomi's credit table and API list prices: one credit is worth the same on every token type, so the workload mix doesn't matter. V2.6-Pro $55; Flash $53; all off-peak $69 (1.38×). Essentially prepaid API usage, not a subsidy.",
-      "taskModel": "mimo-v2.6-pro"
+      "notes": "Computed from Xiaomi's credit table and API list prices: one credit is worth the same on every token type, so the workload mix doesn't matter. V2.6-Pro $55; Flash $53; all off-peak $69 (1.38×). Essentially prepaid API usage, not a subsidy."
     },
     {
       "id": "mimo-max",
@@ -797,74 +792,66 @@
       "sourceId": "mimo-tokenplan",
       "codingRelevant": true,
       "includes": "82B credits/mo · MiMo Code (free, open source) or any OpenAI-compatible tool",
-      "notes": "Computed from Xiaomi's credit table and API list prices: one credit is worth the same on every token type, so the workload mix doesn't matter. V2.6-Pro $119; Flash $115; all off-peak $149 (1.49×). Essentially prepaid API usage, not a subsidy.",
-      "taskModel": "mimo-v2.6-pro"
+      "notes": "Computed from Xiaomi's credit table and API list prices: one credit is worth the same on every token type, so the workload mix doesn't matter. V2.6-Pro $119; Flash $115; all off-peak $149 (1.49×). Essentially prepaid API usage, not a subsidy."
     }
   ],
-  "taskCosts": {
-    "_note": "Artificial Analysis Intelligence Index v5 (v5.0.1), measured cost per task at first-party list prices. One effort level per model: 'high' where a model has several; 'max' only where no other v5 figure was published. Checked 2026-11-20.",
+  "codingAgent": {
+    "_note": "Artificial Analysis Coding Agent Index v2.1 (released 2026-11-13): 322 tasks from FrontierCode-AA 2.0, Terminal-Bench 4.1 and SWE-Atlas-QnA-AA, 3 attempts each, failures score 0. Cost per task at pay-per-token list prices. All models at max effort (the only setting published for most of them). Checked 2026-11-20.",
     "opus-5.5": {
       "label": "Claude Opus 5.5",
-      "effort": "high",
-      "index": 52,
-      "costPerTask": 3.46,
-      "url": "https://artificialanalysis.ai/models/claude-opus-5-5"
+      "harness": "Claude Code",
+      "effort": "max",
+      "score": 58,
+      "costPerTask": 12.61,
+      "url": "https://artificialanalysis.ai/agents/coding-agents"
     },
     "sonnet-5.5": {
       "label": "Claude Sonnet 5.5",
-      "effort": "high",
-      "index": 42,
-      "costPerTask": 1.64,
-      "url": "https://artificialanalysis.ai/models/claude-sonnet-5-5-high"
+      "harness": "Claude Code",
+      "effort": "max",
+      "score": 56,
+      "costPerTask": 11.4,
+      "url": "https://artificialanalysis.ai/agents/coding-agents"
     },
     "fable-5.1": {
       "label": "Claude Fable 5.1",
-      "effort": "high",
-      "index": 47,
-      "costPerTask": 7.54,
-      "url": "https://artificialanalysis.ai/models/claude-fable-5-1"
+      "harness": "Claude Code",
+      "effort": "max",
+      "score": 52,
+      "costPerTask": 11.7,
+      "url": "https://artificialanalysis.ai/agents/coding-agents"
     },
     "sol-6.1": {
       "label": "GPT-6.1 Sol",
-      "effort": "high",
-      "index": 50,
-      "costPerTask": 0.59,
-      "url": "https://artificialanalysis.ai/models/comparisons/gpt-6-1-sol-high-vs-gpt-6-astra-high"
+      "harness": "Codex",
+      "effort": "max",
+      "score": 52,
+      "costPerTask": 1.51,
+      "url": "https://artificialanalysis.ai/agents/coding-agents"
     },
     "astra-6": {
       "label": "GPT-6 Astra",
-      "effort": "high",
-      "index": 55,
-      "costPerTask": 3.24,
-      "url": "https://artificialanalysis.ai/models/comparisons/gpt-6-1-sol-high-vs-gpt-6-astra-high"
+      "harness": "Codex",
+      "effort": "max",
+      "score": 53,
+      "costPerTask": 7.63,
+      "url": "https://artificialanalysis.ai/agents/coding-agents"
     },
     "muse-spark-1.3": {
       "label": "Muse Spark 1.3",
+      "harness": "Muse Code",
       "effort": "max",
-      "index": 37,
-      "costPerTask": 2.39,
-      "url": "https://artificialanalysis.ai/models/releases/muse-spark-1-3"
-    },
-    "mimo-v2.6-pro": {
-      "label": "MiMo-V2.6-Pro",
-      "effort": "single",
-      "index": 30,
-      "costPerTask": 0.26,
-      "url": "https://artificialanalysis.ai/models/mimo-v2-6-pro"
-    },
-    "minimax-m3": {
-      "label": "MiniMax-M3",
-      "effort": "single",
-      "index": 19,
-      "costPerTask": 1.29,
-      "url": "https://artificialanalysis.ai/models/minimax-m3"
+      "score": 37,
+      "costPerTask": 4.34,
+      "url": "https://artificialanalysis.ai/agents/coding-agents"
     },
     "glm-5.3": {
       "label": "GLM-5.3",
+      "harness": "Opencode",
       "effort": "max",
-      "index": 32,
-      "costPerTask": 5.01,
-      "url": "https://artificialanalysis.ai/models/comparisons/mimo-v2-6-pro-vs-glm-5-3"
+      "score": 40,
+      "costPerTask": 5.41,
+      "url": "https://artificialanalysis.ai/agents/coding-agents"
     }
   }
 }

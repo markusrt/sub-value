@@ -23,7 +23,7 @@ Lower tiers (Claude Pro / Max, ChatGPT Plus / Pro 100 / Pro 500) and MiniMax / G
 
 **Xiaomi MiMo Token Plan** (used by the free MiMo Code agent) is computed from Xiaomi's own credit and API price tables: roughly 1×–1.2× at peak, up to ~1.5× off-peak — prepaid API usage rather than a subsidy.
 
-**Benchmark tasks** = API-equivalent value ÷ [Artificial Analysis](https://artificialanalysis.ai/articles/artificial-analysis-intelligence-index-v5) measured cost per Intelligence Index task (v5, one effort level per model). It puts every row in the same unit, so cheap models (e.g. MiMo-V2.6-Pro at $0.26/task) are visible even when their plans sit near 1×. It's a general benchmark, not coding in a specific agent — an indicator, not a guarantee.
+**Coding quality per dollar:** each row also shows the model's [Artificial Analysis Coding Agent Index](https://artificialanalysis.ai/agents/coding-agents) v2.1 score (model in its own coding agent, max effort) and **solved tasks** = API-equivalent value ÷ (cost per task ÷ score). Score and cost are kept as separate numbers; a minimum-score filter finds the cheapest setup that is good enough. Untested models (e.g. MiMo, MiniMax) show —.
 
 These are **ceilings at full utilization** — not typical user spend. Values differ by model, so Claude and ChatGPT plans have one row per model.
 
