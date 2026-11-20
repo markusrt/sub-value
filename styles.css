@@ -409,6 +409,11 @@ input[type="checkbox"]:focus-visible {
   color: var(--ink-faint);
 }
 
+.tasks {
+  font-weight: 600;
+  color: var(--ink);
+}
+
 .source-asof {
   display: block;
   margin-top: 0.2rem;
@@ -666,4 +671,10 @@ input[type="checkbox"]:focus-visible {
     animation: none;
     transition: none;
   }
+}
+
+.fineprint {
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  margin-top: 0.5rem;
 }

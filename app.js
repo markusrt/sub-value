@@ -35,6 +35,26 @@ const isApi = (p) => p.category === "api";
 
 const priceLabel = (p) => (isApi(p) ? `${money(p.stickerUSD)} spend` : `${money(p.stickerUSD)}/mo`);
 
+let TASK_COSTS = {};
+
+const taskStats = (p) => {
+  const tc = p.taskModel ? TASK_COSTS[p.taskModel] : null;
+  if (!tc || p.apiEqUSD == null) return null;
+  return { tc, total: p.apiEqUSD / tc.costPerTask, perDollar: p.apiEqUSD / tc.costPerTask / p.stickerUSD };
+};
+
+const num = (n) => Math.round(n).toLocaleString("en-US");
+
+const tasksLabel = (p) => {
+  const t = taskStats(p);
+  if (!t) return null;
+  return {
+    main: `${num(t.total)}${isApi(p) ? "" : "/mo"}`,
+    sub: `${t.perDollar >= 10 ? num(t.perDollar) : t.perDollar.toFixed(1)} per $`,
+    title: `${t.tc.label} (${t.tc.effort}): $${t.tc.costPerTask.toFixed(2)} per Artificial Analysis task, index ${t.tc.index}`,
+  };
+};
+
 const sourceMap = (sources) =>
   Object.fromEntries((sources || []).map((s) => [s.id, s]));
 
@@ -53,6 +73,7 @@ function filterAndSort(plans, { provider, sort, codingOnly, measuredOnly, includ
 
   const val = (p) => p.apiEqUSD ?? -1;
   const mult = (p) => p.multiplier ?? -1;
+  const tpd = (p) => taskStats(p)?.perDollar ?? -1;
 
   rows.sort((a, b) => {
     switch (sort) {
@@ -60,6 +81,8 @@ function filterAndSort(plans, { provider, sort, codingOnly, measuredOnly, includ
         return val(b) - val(a);
       case "sticker":
         return a.stickerUSD - b.stickerUSD;
+      case "tasks":
+        return tpd(b) - tpd(a) || val(b) - val(a);
       case "provider":
         return a.provider.localeCompare(b.provider) || a.stickerUSD - b.stickerUSD;
       case "multiplier":
@@ -134,6 +157,10 @@ function renderTable(rows, sources) {
         p.apiEqLowUSD != null
           ? moneyRange(p.apiEqLowUSD, p.apiEqHighUSD)
           : "—";
+      const tl = tasksLabel(p);
+      const tasks = tl
+        ? `<span class="tasks" title="${tl.title}">${tl.main}</span><span class="plan-provider source-asof">${tl.sub}</span>`
+        : `<span class="na">—</span>`;
       const conf = p.confidence
         ? `<span class="badge ${p.confidence}">${p.confidence}</span>`
         : `<span class="na">—</span>`;
@@ -154,6 +181,7 @@ function renderTable(rows, sources) {
           <td class="num">${api}</td>
           <td class="num range">${range}</td>
           <td class="num">${mult}</td>
+          <td class="num">${tasks}</td>
           <td>${conf}</td>
           <td>${sourceCell}</td>
         </tr>
@@ -167,6 +195,7 @@ function renderCards(rows, sources) {
   root.innerHTML = rows
     .map((p) => {
       const src = p.sourceId ? sources[p.sourceId] : null;
+      const tl = tasksLabel(p);
       return `
         <article class="plan-card">
           <h3>${planLabel(p)}</h3>
@@ -176,6 +205,7 @@ function renderCards(rows, sources) {
             <div class="metric"><span>API-eq</span><strong class="api-eq">${p.apiEqUSD != null ? money(p.apiEqUSD) : "—"}</strong></div>
             <div class="metric"><span>Range</span><strong>${moneyRange(p.apiEqLowUSD, p.apiEqHighUSD)}</strong></div>
             <div class="metric"><span>Multiplier</span><strong class="multiplier">${p.multiplier != null ? p.multiplier + "×" : "—"}</strong></div>
+            <div class="metric"><span>Benchmark tasks</span><strong class="tasks" title="${tl ? tl.title : ""}">${tl ? `${tl.main} · ${tl.sub}` : "—"}</strong></div>
           </div>
           <p class="notes">${p.notes || ""}${src ? ` <a href="${src.url}" target="_blank" rel="noopener">Source</a>` : ""}</p>
         </article>
@@ -214,6 +244,26 @@ function renderChart(rows) {
   });
 }
 
+function renderTaskCosts(taskCosts) {
+  const root = document.getElementById("task-costs-body");
+  if (!root) return;
+  const rows = Object.entries(taskCosts).filter(([k]) => !k.startsWith("_"));
+  root.innerHTML = rows
+    .sort(([, a], [, b]) => a.costPerTask - b.costPerTask)
+    .map(
+      ([, t]) => `
+        <tr>
+          <td><a class="source-link" href="${t.url}" target="_blank" rel="noopener">${t.label}</a></td>
+          <td>${t.effort}</td>
+          <td class="num">${t.index}</td>
+          <td class="num">$${t.costPerTask.toFixed(2)}</td>
+        </tr>`
+    )
+    .join("");
+  const note = document.getElementById("task-costs-note");
+  if (note && taskCosts._note) note.textContent = taskCosts._note;
+}
+
 function renderSources(sources) {
   const list = document.getElementById("sources-list");
   list.innerHTML = sources
@@ -250,15 +300,17 @@ function wireControls(data) {
 async function main() {
   try {
     const data = await loadData();
+    TASK_COSTS = data.taskCosts || {};
     document.getElementById("updated-label").textContent = `Data as of ${data.updatedAt}`;
     document.getElementById("methodology-text").textContent = data.methodology;
     renderHero(data.plans);
     renderProviderOptions(data.plans);
     renderSources(data.sources);
+    renderTaskCosts(TASK_COSTS);
     wireControls(data);
   } catch (err) {
     document.getElementById("plans-body").innerHTML =
-      `<tr><td colspan="7">Failed to load data: ${err.message}</td></tr>`;
+      `<tr><td colspan="8">Failed to load data: ${err.message}</td></tr>`;
     console.error(err);
   }
 }
