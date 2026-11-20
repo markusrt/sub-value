@@ -28,7 +28,7 @@
   --font-display: "Fraunces", Georgia, serif;
   --font-body: "Source Sans 3", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
-  --max: 1120px;
+  --max: 1240px;
 }
 
 *,
@@ -290,7 +290,7 @@ input[type="checkbox"]:focus-visible {
 
 .plans-table th,
 .plans-table td {
-  padding: 0.85rem 1rem;
+  padding: 0.85rem 0.8rem;
   border-bottom: 1px solid var(--line);
   text-align: left;
   vertical-align: middle;
@@ -394,6 +394,7 @@ input[type="checkbox"]:focus-visible {
 }
 
 .source-link {
+  overflow-wrap: anywhere;
   font-family: var(--font-mono);
   font-size: 0.78rem;
   color: var(--ink-muted);
@@ -494,7 +495,32 @@ input[type="checkbox"]:focus-visible {
 .subsidy-chart {
   display: flex;
   flex-direction: column;
+  gap: 1.6rem;
+}
+
+.bar-group {
+  display: flex;
+  flex-direction: column;
   gap: 0.7rem;
+}
+
+.bar-group-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.bar-group-head strong {
+  color: var(--ink-muted);
+  font-weight: 600;
 }
 
 .bar-row {

@@ -229,17 +229,33 @@ function renderCards(rows, sources) {
     .join("");
 }
 
+const CHART_GROUPS = [
+  { max: 99999, label: "$10,000 – $99,999" },
+  { max: 9999, label: "$1,000 – $9,999" },
+  { max: 999, label: "Up to $999" },
+];
+
 function renderChart(rows) {
   const root = document.getElementById("subsidy-chart");
   const chartable = rows.filter((p) => p.apiEqUSD != null);
-  const max = Math.max(...chartable.map((p) => p.apiEqUSD), 1);
+  const groupOf = (v) => {
+    let g = CHART_GROUPS[0];
+    for (const cand of CHART_GROUPS) if (v <= cand.max) g = cand;
+    return g;
+  };
 
-  root.innerHTML = chartable
-    .map((p) => {
-      const pct = Math.max(0.8, (p.apiEqUSD / max) * 100);
-      const stickerPct = Math.max(0.15, (p.stickerUSD / max) * 100);
-      const cls = providerClass(p.provider);
-      return `
+  root.innerHTML = CHART_GROUPS.map((group) => {
+    const members = chartable
+      .filter((p) => groupOf(p.apiEqUSD) === group)
+      .sort((a, b) => b.apiEqUSD - a.apiEqUSD);
+    if (!members.length) return "";
+    const max = Math.max(...members.map((p) => p.apiEqUSD), 1);
+    const bars = members
+      .map((p) => {
+        const pct = Math.max(0.8, (p.apiEqUSD / max) * 100);
+        const stickerPct = Math.min(100, Math.max(0.15, (p.stickerUSD / max) * 100));
+        const cls = providerClass(p.provider);
+        return `
         <div class="bar-row">
           <div class="bar-label">${planLabel(p)}</div>
           <div class="bar-track" title="Sticker ${money(p.stickerUSD)} vs API-eq ${money(p.apiEqUSD)}">
@@ -247,10 +263,15 @@ function renderChart(rows) {
             <div class="bar-sticker" style="left:${stickerPct}%"></div>
           </div>
           <div class="bar-value">${money(p.apiEqUSD)}</div>
-        </div>
-      `;
-    })
-    .join("");
+        </div>`;
+      })
+      .join("");
+    return `
+      <div class="bar-group">
+        <div class="bar-group-head"><strong>${group.label}</strong><span>scale 0 – ${money(max)} · ${members.length} plan${members.length === 1 ? "" : "s"}</span></div>
+        ${bars}
+      </div>`;
+  }).join("");
 
   requestAnimationFrame(() => {
     root.querySelectorAll(".bar-fill").forEach((el) => {
